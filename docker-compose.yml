@@ -1,0 +1,27 @@
+version: '3'
+
+
+services:
+  api_app:
+    container_name: web_app
+    restart: always
+    build:
+      context: ./app
+    volumes:
+      - ${PWD}/app:/var/task/app
+      - ${PWD}/script.sh:/var/tmp/script.sh
+    command: sh -c "../tmp/script.sh"
+    ports:
+      - "8000:8000"
+
+  web_server:
+    container_name: nginx
+    build: ./nginx
+    image: nginx:latest
+    volumes:
+      - ${PWD}/nginx/local.conf:/etc/nginx/conf.d/project.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - api_app
+    restart: unless-stopped
